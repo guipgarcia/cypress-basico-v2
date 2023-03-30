@@ -155,4 +155,20 @@ describe('Central de Atendimento ao Cliente TAT', function(){
     it('Validar Politica de Privacidade acessando o link diretamente', function(){
         cy.visitPrivacyLinkAndValidateLine2Text();
     });
+
+    it('Validar Mensagem de Erro com Cy.Clock() e Cy.Click()', function(){
+        cy.clock();
+        cy.clickEnviarButton();
+        cy.get(mensagemErroMap).should('be.visible');
+        cy.tick(3000);
+        cy.get(mensagemErroMap).should('not.be.visible');
+    }); //fillMandatoryFieldsWithMockedValuesAndPressEnter
+    
+    it('Validar Mensagem de Sucesso com Cy.Clock() e Cy.Click()', function(){
+        cy.clock();
+        cy.fillMandatoryFieldsWithMockedValuesAndPressEnter();
+        cy.validateSuccessMessage();
+        cy.tick(3000);
+        cy.validateSuccessMessage('not.');
+    }); //
 });

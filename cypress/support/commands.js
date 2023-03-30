@@ -44,13 +44,24 @@ var delay = 200;
         privacyWhiteBoardMap = "[id = 'white-background']";
         
 
+Cypress.Commands.add('fillMandatoryFieldsWithMockedValuesAndPressEnter', function(firstName){
+   cy.fillFirstNameField('Mandatory Name');
+   cy.fillLastNameField('Mandatory Lastname');
+   cy.fillEmailField('mandatorymail@mail.com');
+   cy.fillOpenTextAreaField('Mandatory Text Area');
+   cy.clickEnviarButton();
+});
+
 Cypress.Commands.add('fillFirstNameField', function(firstName){
     cy.get(firstNameMap).should('be.visible')
             .type(firstName, {"delay":delay}).should('have.value',firstName)
 });
 
-Cypress.Commands.add('validateSuccessMessage', function(firstName){
-    cy.get(mensagemSucessoMap).should('be.visible');
+Cypress.Commands.add('validateSuccessMessage', function(operation){
+    if(operation == undefined)
+        operation = ""
+    cy.get(mensagemSucessoMap).should(operation+'be.visible').should('contain', 'Mensagem enviada com sucesso.');
+
 });
 
 Cypress.Commands.add('fillLastNameField', function(lastName){
