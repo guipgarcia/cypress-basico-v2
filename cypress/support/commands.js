@@ -41,14 +41,15 @@ var delay = 200;
         checkboxesMap = "div[id = 'check'] > input[type='checkbox']",
         chooseFileMap = "[id = 'file-upload']",
         politicaDePrivacidadeMap = "[href = 'privacy.html']",
-        privacyWhiteBoardMap = "[id = 'white-background']";
+        privacyWhiteBoardMap = "[id = 'white-background']",
+        catIconMap = "[id = 'cat']";
         
 
 Cypress.Commands.add('fillMandatoryFieldsWithMockedValuesAndPressEnter', function(firstName){
    cy.fillFirstNameField('Mandatory Name');
    cy.fillLastNameField('Mandatory Lastname');
    cy.fillEmailField('mandatorymail@mail.com');
-   cy.fillOpenTextAreaField('Mandatory Text Area');
+   cy.fillOpenTextAreaField('Mandatory text area');
    cy.clickEnviarButton();
 });
 
@@ -84,6 +85,11 @@ Cypress.Commands.add('fillPhoneField', function(phone, phoneValidation){
 Cypress.Commands.add('fillOpenTextAreaField', function(openTextArea){
     cy.get(textareaMap).should('be.visible')
             .type(openTextArea, {"delay":delay}).should('have.value', openTextArea);           
+});
+Cypress.Commands.add('fillOpenTextAreaFieldWithRepeat', function(openTextArea, repeateTimes){
+    const openTextAreaTxt = Cypress._.repeat(openTextArea, repeateTimes);
+    cy.get(textareaMap).should('be.visible')
+            .invoke('val', openTextAreaTxt).should('have.value', openTextAreaTxt);           
 });
 
 Cypress.Commands.add('clickEnviarButton', function(){
@@ -181,9 +187,22 @@ Cypress.Commands.add('accessPoliticaDePrivacidade', function(){
     cy.get(politicaDePrivacidadeMap).should('have.attr','target','_blank')
 });
 
+Cypress.Commands.add('showCatIcon', function(){
+    cy.get(catIconMap).should('not.be.visible').invoke('show').should('be.visible');
+});
+
 Cypress.Commands.add('accessPoliticaDePrivacidadeViaInvoke', function(){
     cy.get(politicaDePrivacidadeMap).invoke('removeAttr','target').click();
     cy.title().should('eq', 'Central de Atendimento ao Cliente TAT - Política de privacidade');
+});
+
+Cypress.Commands.add('showAndValidateHiddenContentsViaInvoke', function(){
+    cy.get(mensagemSucessoMap).should('not.be.visible')
+        .invoke('show').should('be.visible').should('contain', 'Mensagem enviada com sucesso.')
+        .invoke('hide').should('not.be.visible');
+    cy.get(mensagemErroMap).should('not.be.visible')
+        .invoke('show').should('be.visible').should('contain', 'Valide os campos obrigatórios!')
+        .invoke('hide').should('not.be.visible');
 });
 
 Cypress.Commands.add('visitPrivacyLinkAndValidateLine2Text', function(){

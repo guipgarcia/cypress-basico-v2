@@ -156,19 +156,52 @@ describe('Central de Atendimento ao Cliente TAT', function(){
         cy.visitPrivacyLinkAndValidateLine2Text();
     });
 
-    it('Validar Mensagem de Erro com Cy.Clock() e Cy.Click()', function(){
-        cy.clock();
-        cy.clickEnviarButton();
-        cy.get(mensagemErroMap).should('be.visible');
-        cy.tick(3000);
-        cy.get(mensagemErroMap).should('not.be.visible');
-    }); //fillMandatoryFieldsWithMockedValuesAndPressEnter
+    Cypress._.times(5, ()=>{
+        it('Validar Mensagem de Erro com Cy.Clock() e Cy.Click()', function(){
+            cy.clock();
+            cy.clickEnviarButton();
+            cy.get(mensagemErroMap).should('be.visible');
+            cy.tick(3000);
+            cy.get(mensagemErroMap).should('not.be.visible');
+        });
+    }); 
+
+    Cypress._.times(5, ()=>{
+        it('Validar Mensagem de Sucesso com Cy.Clock() e Cy.Click()', function(){
+            cy.clock();
+            cy.fillMandatoryFieldsWithMockedValuesAndPressEnter();
+            cy.validateSuccessMessage();
+            cy.tick(3000);
+            cy.validateSuccessMessage('not.');
+        });
+    });
+   
     
-    it('Validar Mensagem de Sucesso com Cy.Clock() e Cy.Click()', function(){
-        cy.clock();
-        cy.fillMandatoryFieldsWithMockedValuesAndPressEnter();
-        cy.validateSuccessMessage();
-        cy.tick(3000);
-        cy.validateSuccessMessage('not.');
-    }); //
+    it('Validar Mensagem Text Area com Cypress Repeat', function(){
+        cy.fillOpenTextAreaFieldWithRepeat('We will carry on, We will carry on...\n', 7);
+    });
+
+    it('Exibir conteudos escondidos,validar os valores e depois escondê-los novamente', function(){
+        cy.showAndValidateHiddenContentsViaInvoke();
+    });
+
+    it.only('Fazer um request para cac tat e validar que o status code é 200', function(){
+        cy.request({
+            method: 'GET',
+            url:'https://cac-tat.s3.eu-central-1.amazonaws.com/index.html'
+        }).then((response) =>{
+            expect(response.status).to.equal(200);
+            expect(response.body).to.contains('CAC TAT');
+            expect(response.statusText).to.equal('OK');
+        });
+    });
+
+    
+    it.only('Exibir o gato', function(){
+        cy.showCatIcon();
+    });
+    
+
+    //
+    
 });
