@@ -6,19 +6,14 @@
 // https://on.cypress.io/writing-first-test
 
 
-
 describe('Central de Atendimento ao Cliente TAT', function(){  
     // Variáveis de input
-    var delay = 200,    
+    const delay = 200,    
             firstName = 'Some Name', 
             lastName = 'Some LastName', 
             email = 'somemail@mail.com', 
             openTextArea = 'Inserting some text just to fill this blooding field',
             phone = '123456789';
-
-    let mensagemErroMap = "span[class = 'error']",
-        phoneCheckBoxMap = "input[id = 'phone-checkbox']",
-        requiredMarkPhoneMap = "label[for = 'phone'] > span[class = 'phone-label-span required-mark']";
 
     beforeEach(() =>{
         cy.visit('./src/index.html');
@@ -27,14 +22,14 @@ describe('Central de Atendimento ao Cliente TAT', function(){
 
     it('Escrevendo nos elementos da tela e validando os novos valores', function(){         
         cy.fillFirstNameField(firstName);
-        cy.fillLastNameField(firstName);
+        cy.fillLastNameField(lastName);
         cy.fillEmailField(email);
         cy.fillPhoneField(phone);
     });
    
     it('Escrever os dados obrigatórios com delay e clicar em enviar', function(){
         cy.fillFirstNameField(firstName);
-        cy.fillLastNameField(firstName);
+        cy.fillLastNameField(lastName);
         cy.fillEmailField(email);
         cy.fillPhoneField(phone);
         cy.fillOpenTextAreaField(email + firstName);
@@ -48,7 +43,7 @@ describe('Central de Atendimento ao Cliente TAT', function(){
         cy.fillEmailField("email");
         cy.fillOpenTextAreaField(email + firstName);
         cy.clickEnviarButton();
-        cy.get(mensagemErroMap).should('be.visible');
+        cy.validateErrorMessage();
     });
 
     it('Validar se o valor para telefone é vazio em caso de digitar strings', function(){
@@ -64,11 +59,9 @@ describe('Central de Atendimento ao Cliente TAT', function(){
         cy.fillLastNameField(firstName);
         cy.fillEmailField("email");
         cy.fillOpenTextAreaField(email + firstName);
-        cy.get(phoneCheckBoxMap).should('be.visible')
-            .check().should('be.checked');
-        cy.get(requiredMarkPhoneMap).should('be.visible');
+        cy.checkPhoneCheckbox();
         cy.clickEnviarButton();
-        cy.get(mensagemErroMap).should('be.visible');
+        cy.validateErrorMessage();
     });
     
     it('Preencher campos, depois limpar os campos e validar que todos os campos foram limpos', function(){
@@ -86,7 +79,7 @@ describe('Central de Atendimento ao Cliente TAT', function(){
 
     it('Clicar em enviar sem preencher nenhum campo', function(){
         cy.clickEnviarButton();
-        cy.get(mensagemErroMap).should('be.visible');
+        cy.validateErrorMessage();
     });
     
     it('Capturar elemento usando o cy.contains', function(){
@@ -160,9 +153,9 @@ describe('Central de Atendimento ao Cliente TAT', function(){
         it('Validar Mensagem de Erro com Cy.Clock() e Cy.Click()', function(){
             cy.clock();
             cy.clickEnviarButton();
-            cy.get(mensagemErroMap).should('be.visible');
+            cy.validateErrorMessage();
             cy.tick(3000);
-            cy.get(mensagemErroMap).should('not.be.visible');
+            cy.validateErrorMessage('not.');
         });
     }); 
 
@@ -185,7 +178,7 @@ describe('Central de Atendimento ao Cliente TAT', function(){
         cy.showAndValidateHiddenContentsViaInvoke();
     });
 
-    it.only('Fazer um request para cac tat e validar que o status code é 200', function(){
+    it('Fazer um request para cac tat e validar que o status code é 200', function(){
         cy.request({
             method: 'GET',
             url:'https://cac-tat.s3.eu-central-1.amazonaws.com/index.html'
@@ -197,11 +190,8 @@ describe('Central de Atendimento ao Cliente TAT', function(){
     });
 
     
-    it.only('Exibir o gato', function(){
+    it('Exibir o gato', function(){
         cy.showCatIcon();
     });
-    
-
-    //
     
 });
