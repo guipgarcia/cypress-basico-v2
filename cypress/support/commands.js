@@ -23,28 +23,11 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+import FormElementsPage from './FormPage.js';
+const fieldsMaps = new FormElementsPage;
 
 var delay = 200;
-
-    let firstNameMap = "input[id = 'firstName']",
-        lastNameMap = "input[id = 'lastName']",
-        emailMap = "input[id = 'email']",
-        phoneMap = "input[id = 'phone']",
-        textareaMap = "textarea[id = 'open-text-area']",
-        enviarButtonMap = "button[type = 'submit']",
-        mensagemSucessoMap = "span[class = 'success']",
-        mensagemErroMap = "span[class = 'error']",
-        phoneCheckBoxMap = "input[id = 'phone-checkbox']",
-        requiredMarkPhoneMap = "label[for = 'phone'] > span[class = 'phone-label-span required-mark']",
-        selectProductMap = "[id = product]",
-        selectProductOptionsMap = "[id = product] > option",
-        checkboxesMap = "div[id = 'check'] > input[type='checkbox']",
-        chooseFileMap = "[id = 'file-upload']",
-        politicaDePrivacidadeMap = "[href = 'privacy.html']",
-        privacyWhiteBoardMap = "[id = 'white-background']",
-        catIconMap = "[id = 'cat']";
-        
-
+    
 Cypress.Commands.add('fillMandatoryFieldsWithMockedValuesAndPressEnter', function(firstName){
    cy.fillFirstNameField('Mandatory Name');
    cy.fillLastNameField('Mandatory Lastname');
@@ -54,57 +37,56 @@ Cypress.Commands.add('fillMandatoryFieldsWithMockedValuesAndPressEnter', functio
 });
 
 Cypress.Commands.add('fillFirstNameField', function(firstName){
-    cy.get(firstNameMap).should('be.visible')
+    cy.get(fieldsMaps.firstNameMap()).should('be.visible')
             .type(firstName, {"delay":delay}).should('have.value',firstName)
 });
 
-Cypress.Commands.add('validateSuccessMessage', function(operation){
-    if(operation == undefined)
-        operation = ""
-    cy.get(mensagemSucessoMap).should(operation+'be.visible').should('contain', 'Mensagem enviada com sucesso.');
+Cypress.Commands.add('validateSuccessMessage', function(operation=""){
+    cy.get(fieldsMaps.mensagemSucessoMap()).should(operation+'be.visible').should('contain', 'Mensagem enviada com sucesso.');
+});
 
+Cypress.Commands.add('validateErrorMessage', (operation = "")=>{
+    cy.get(fieldsMaps.mensagemErroMap()).should(operation+'be.visible').should('contain', 'Valide os campos obrigatórios!');
 });
 
 Cypress.Commands.add('fillLastNameField', function(lastName){
-    cy.get(lastNameMap).should('be.visible')
+    cy.get(fieldsMaps.lastNameMap()).should('be.visible')
             .type(lastName, {"delay":delay}).should('have.value',lastName)
 });
 
 Cypress.Commands.add('fillEmailField', function(email){   
-    cy.get(emailMap).should('be.visible')
+    cy.get(fieldsMaps.emailMap()).should('be.visible')
             .type(email, {"delay":delay}).should('have.value', email)       
 });
 
-Cypress.Commands.add('fillPhoneField', function(phone, phoneValidation){
-    if(phoneValidation == undefined)
-        phoneValidation = phone
-    cy.get(phoneMap).should('be.visible')
+Cypress.Commands.add('fillPhoneField', function(phone, phoneValidation = phone){
+    cy.get(fieldsMaps.phoneMap()).should('be.visible')
     .type(phone, {"delay":delay}).should('have.value', phoneValidation)
 });
 
 Cypress.Commands.add('fillOpenTextAreaField', function(openTextArea){
-    cy.get(textareaMap).should('be.visible')
+    cy.get(fieldsMaps.textareaMap()).should('be.visible')
             .type(openTextArea, {"delay":delay}).should('have.value', openTextArea);           
 });
 Cypress.Commands.add('fillOpenTextAreaFieldWithRepeat', function(openTextArea, repeateTimes){
     const openTextAreaTxt = Cypress._.repeat(openTextArea, repeateTimes);
-    cy.get(textareaMap).should('be.visible')
+    cy.get(fieldsMaps.textareaMap()).should('be.visible')
             .invoke('val', openTextAreaTxt).should('have.value', openTextAreaTxt);           
 });
 
 Cypress.Commands.add('clickEnviarButton', function(){
-    cy.get(enviarButtonMap).
+    cy.get(fieldsMaps.enviarButtonMap()).
     should('be.visible').click();
 });
 
 Cypress.Commands.add('selectProduct', function(product, valueToCompare){
-    cy.get(selectProductMap).should('be.visible')
+    cy.get(fieldsMaps.selectProductMap()).should('be.visible')
     .select(product).should('have.value', valueToCompare);
 });
 
 
 Cypress.Commands.add('selectARandomProduct', function(){
-    cy.get(selectProductOptionsMap).as('products')
+    cy.get(fieldsMaps.selectProductOptionsMap()).as('products')
     .its('length', { log : false}).then(n =>{
          cy.get('@products', {log:false}).then($products =>{
             var randomIndex = Cypress._.random(n-1);
@@ -113,7 +95,7 @@ Cypress.Commands.add('selectARandomProduct', function(){
                 randomIndex ++;
             }
             const randomText = $products[randomIndex].innerText;
-            cy.get(selectProductMap).select(randomText);
+            cy.get(fieldsMaps.selectProductMap()).select(randomText);
          })   
     })
 });
@@ -124,8 +106,7 @@ Cypress.Commands.add('selectSupportTypeOption', function(option){
 });
 
 Cypress.Commands.add('selectAllSupportTypeOption', function(){
-    var supportTypeMap = "input[type= 'radio']";
-    cy.get(supportTypeMap).each(($value)=>{    
+    cy.get(fieldsMaps.supportTypeMap()).each(($value)=>{    
         cy.wrap($value).check().should('be.checked');   
     });
 });
@@ -138,13 +119,13 @@ Cypress.Commands.add('checkContactCheckbox', function(contact){
 });
 
 Cypress.Commands.add('checkAllCheckboxesAndUncheckTheLast', function(contact){
-    cy.get(checkboxesMap).should('be.visible')
+    cy.get(fieldsMaps.checkboxesMap()).should('be.visible')
         .check().should('be.checked').last()
             .uncheck().should('not.be.checked');
 });
 
 Cypress.Commands.add('checkAllCheckboxes', function(){
-    cy.get(checkboxesMap).should('be.visible').check().should('be.checked');   
+    cy.get(fieldsMaps.checkboxesMap()).should('be.visible').check().should('be.checked');   
 });
 
 Cypress.Commands.add('uncheckContactCheckbox', function(contact){
@@ -156,7 +137,7 @@ Cypress.Commands.add('uncheckContactCheckbox', function(contact){
 });
 
 Cypress.Commands.add('inputFileFromFixture', function(){
-    cy.get(chooseFileMap).should('be.visible')
+    cy.get(fieldsMaps.chooseFileMap()).should('be.visible')
         .selectFile('cypress/fixtures/example.json')
         .then((input) =>{
             cy.log(input);
@@ -165,7 +146,7 @@ Cypress.Commands.add('inputFileFromFixture', function(){
 });
 
 Cypress.Commands.add('inputFileFromDragNDrop', function(){
-    cy.get(chooseFileMap).should('be.visible')
+    cy.get(fieldsMaps.chooseFileMap()).should('be.visible')
         .selectFile('cypress/fixtures/example.json', {action : 'drag-drop'})
         .then((input) =>{
             cy.log(input);
@@ -175,7 +156,7 @@ Cypress.Commands.add('inputFileFromDragNDrop', function(){
 
 Cypress.Commands.add('inputFileFromAliasedFixture', function(){
     cy.fixture('example.json', {encoding : null}).as('example');
-    cy.get(chooseFileMap).should('be.visible')
+    cy.get(fieldsMaps.chooseFileMap()).should('be.visible')
         .selectFile('@example')
         .then((input) =>{
             cy.log(input);
@@ -184,23 +165,23 @@ Cypress.Commands.add('inputFileFromAliasedFixture', function(){
 });
 
 Cypress.Commands.add('accessPoliticaDePrivacidade', function(){
-    cy.get(politicaDePrivacidadeMap).should('have.attr','target','_blank')
+    cy.get(fieldsMaps.politicaDePrivacidadeMap()).should('have.attr','target','_blank')
 });
 
 Cypress.Commands.add('showCatIcon', function(){
-    cy.get(catIconMap).should('not.be.visible').invoke('show').should('be.visible');
+    cy.get(fieldsMaps.catIconMap()).should('not.be.visible').invoke('show').should('be.visible');
 });
 
 Cypress.Commands.add('accessPoliticaDePrivacidadeViaInvoke', function(){
-    cy.get(politicaDePrivacidadeMap).invoke('removeAttr','target').click();
+    cy.get(fieldsMaps.politicaDePrivacidadeMap()).invoke('removeAttr','target').click();
     cy.title().should('eq', 'Central de Atendimento ao Cliente TAT - Política de privacidade');
 });
 
 Cypress.Commands.add('showAndValidateHiddenContentsViaInvoke', function(){
-    cy.get(mensagemSucessoMap).should('not.be.visible')
+    cy.get(fieldsMaps.mensagemSucessoMap()).should('not.be.visible')
         .invoke('show').should('be.visible').should('contain', 'Mensagem enviada com sucesso.')
         .invoke('hide').should('not.be.visible');
-    cy.get(mensagemErroMap).should('not.be.visible')
+    cy.get(fieldsMaps.mensagemErroMap()).should('not.be.visible')
         .invoke('show').should('be.visible').should('contain', 'Valide os campos obrigatórios!')
         .invoke('hide').should('not.be.visible');
 });
@@ -208,5 +189,11 @@ Cypress.Commands.add('showAndValidateHiddenContentsViaInvoke', function(){
 Cypress.Commands.add('visitPrivacyLinkAndValidateLine2Text', function(){
     cy.visit('./src/privacy.html')
     cy.title().should('eq', 'Central de Atendimento ao Cliente TAT - Política de privacidade');
-    cy.get(privacyWhiteBoardMap+"> p:nth-child(2)").should('have.text', 'Utilzamos as tecnologias HTML, CSS e JavaScript, para simular uma aplicação real.')
+    cy.get(fieldsMaps.privacyWhiteBoardMap()+"> p:nth-child(2)").should('have.text', 'Utilzamos as tecnologias HTML, CSS e JavaScript, para simular uma aplicação real.')
+});
+
+Cypress.Commands.add('checkPhoneCheckbox', ()=>{
+    cy.get(fieldsMaps.phoneCheckBoxMap()).should('be.visible')
+    .check().should('be.checked');
+    cy.get(fieldsMaps.requiredMarkPhoneMap()).should('be.visible');
 });
