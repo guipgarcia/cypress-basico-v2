@@ -5,6 +5,8 @@
 // check out the link below and learn how to write your first test:
 // https://on.cypress.io/writing-first-test
 
+import VariablesDefaultValues from "../support/VariablesDefaultValues";
+const defaultValues = new VariablesDefaultValues;
 
 describe('Central de Atendimento ao Cliente TAT', function(){  
     // Variáveis de input
@@ -21,60 +23,61 @@ describe('Central de Atendimento ao Cliente TAT', function(){
     });
 
     it('Escrevendo nos elementos da tela e validando os novos valores', function(){         
-        cy.fillFirstNameField(firstName);
-        cy.fillLastNameField(lastName);
-        cy.fillEmailField(email);
-        cy.fillPhoneField(phone);
+        cy.fillFirstNameField(defaultValues.variables.firstName);
+        cy.fillLastNameField(defaultValues.variables.lastName);
+        cy.fillEmailField(defaultValues.variables.email);
+        cy.fillPhoneField(defaultValues.variables.phone);
     });
    
     it('Escrever os dados obrigatórios com delay e clicar em enviar', function(){
-        cy.fillFirstNameField(firstName);
-        cy.fillLastNameField(lastName);
-        cy.fillEmailField(email);
-        cy.fillPhoneField(phone);
-        cy.fillOpenTextAreaField(email + firstName);
+        cy.fillFirstNameField(defaultValues.variables.firstName);
+        cy.fillLastNameField(defaultValues.variables.lastName);
+        cy.fillEmailField(defaultValues.variables.email);
+        cy.fillPhoneField(defaultValues.variables.phone);
+        cy.fillOpenTextAreaField(defaultValues.variables.email + defaultValues.variables.firstName);
         cy.clickEnviarButton();
         cy.validateSuccessMessage();
     });
 
     it('Escrever E-mail com formato invalido com delay e clicar em enviar', function(){
-        cy.fillFirstNameField(firstName);
-        cy.fillLastNameField(firstName);
-        cy.fillEmailField("email");
-        cy.fillOpenTextAreaField(email + firstName);
+        cy.fillFirstNameField(defaultValues.variables.firstName);
+        cy.fillLastNameField(defaultValues.variables.firstName);
+        cy.fillEmailField(defaultValues.variables.wrongEmailFormat);
+        cy.fillOpenTextAreaField(defaultValues.variables.email + defaultValues.variables.firstName);
         cy.clickEnviarButton();
         cy.validateErrorMessage();
     });
 
     it('Validar se o valor para telefone é vazio em caso de digitar strings', function(){
-        cy.fillPhoneField("phone", "");
+        cy.fillPhoneField(defaultValues.variables.phoneJustWords, "");
     });
 
     it('Validar se apenas a parte numerica do telefone é inserida no campo phone', function(){
-        cy.fillPhoneField(phone+"asasfasfa", phone);
+        cy.fillPhoneField(defaultValues.variables.phone + defaultValues.variables.someLetters, defaultValues.variables.phone);
     });
 
     it('Tonar telefone obrigatório, não preencher seu valor e clicar em enviar', function(){
-        cy.fillFirstNameField(firstName);
-        cy.fillLastNameField(firstName);
+        cy.fillFirstNameField(defaultValues.variables.firstName);
+        cy.fillLastNameField(defaultValues.variables.firstName);
         cy.fillEmailField("email");
-        cy.fillOpenTextAreaField(email + firstName);
+        cy.fillOpenTextAreaField(defaultValues.variables.email + defaultValues.variables.firstName);
         cy.checkPhoneCheckbox();
         cy.clickEnviarButton();
         cy.validateErrorMessage();
     });
     
     it('Preencher campos, depois limpar os campos e validar que todos os campos foram limpos', function(){
-        cy.fillFirstNameField(firstName)
+        cy.fillFirstNameField(defaultValues.variables.firstName)
             .clear().should('have.value', '');
-        cy.fillLastNameField(lastName)
+        cy.fillLastNameField(defaultValues.variables.lastName)
             .clear().should('have.value', '');
-        cy.fillEmailField(email)
+        cy.fillEmailField(defaultValues.variables.email)
             .clear().should('have.value', '');
-        cy.fillPhoneField(phone)
+        cy.fillPhoneField(defaultValues.variables.phone)
             .clear().should('have.value', '');
-        cy.fillOpenTextAreaField(openTextArea)
+        cy.fillOpenTextAreaField(defaultValues.variables.openTextArea)
             .clear().should('have.value', ''); 
+
     });
 
     it('Clicar em enviar sem preencher nenhum campo', function(){
@@ -87,9 +90,9 @@ describe('Central de Atendimento ao Cliente TAT', function(){
     });
 
     it('Selecionar item de seleção suspensa por valor, id e nome', function(){
-        cy.selectProduct('cursos', 'cursos');
-        cy.selectProduct(3, 'mentoria');
-        cy.selectProduct('YouTube', 'youtube');
+        cy.selectProduct(defaultValues.variables.cursosOption.toLowerCase(), defaultValues.variables.cursosOption.toLowerCase());
+        cy.selectProduct(3, defaultValues.variables.mentoriaOption.toLowerCase());
+        cy.selectProduct(defaultValues.variables.youtubeOption, defaultValues.variables.youtubeOption.toLowerCase());
     });
 
     it('Selecionar produto randomico da lista de produtos', function(){
@@ -98,7 +101,7 @@ describe('Central de Atendimento ao Cliente TAT', function(){
     });
 
     it('Selecionar Opção Feedback no tipo de atendimento', function(){
-       cy.selectSupportTypeOption('Ajuda');
+       cy.selectSupportTypeOption(defaultValues.variables.ajudaOption);
     });
 
     it('Selecionar Opção Feedback no tipo de atendimento', function(){
@@ -106,13 +109,13 @@ describe('Central de Atendimento ao Cliente TAT', function(){
     });
 
     it('Selecionar Checkbox', function(){
-       cy.checkContactCheckbox('Email');
-       cy.checkContactCheckbox('PHONE');
+       cy.checkContactCheckbox(defaultValues.variables.emailCheckbox);
+       cy.checkContactCheckbox(defaultValues.variables.phoneCheckbox);
     });
 
     it('Deselecionar Checkbox', function(){
-       cy.uncheckContactCheckbox('Email');
-       cy.uncheckContactCheckbox('PHONE');
+       cy.uncheckContactCheckbox(defaultValues.variables.emailCheckbox);
+       cy.uncheckContactCheckbox(defaultValues.variables.phoneCheckbox);
     });
     
     it('Checar todos os checkboxes e descheckar o ultimo', function(){
@@ -121,8 +124,8 @@ describe('Central de Atendimento ao Cliente TAT', function(){
 
     it('Checar todos os checkboxes e descheckar todos os checkboxes', function(){
         cy.checkAllCheckboxes();
-        cy.uncheckContactCheckbox('EmAiL');
-        cy.uncheckContactCheckbox('PhonE');
+        cy.uncheckContactCheckbox(defaultValues.variables.emailCheckbox);
+        cy.uncheckContactCheckbox(defaultValues.variables.phoneCheckbox);
     });
 
     it('Escolher o arquivo da pasta fixtures', function(){
@@ -155,7 +158,7 @@ describe('Central de Atendimento ao Cliente TAT', function(){
             cy.clickEnviarButton();
             cy.validateErrorMessage();
             cy.tick(3000);
-            cy.validateErrorMessage('not.');
+            cy.validateErrorMessage(defaultValues.variables.not);
         });
     }); 
 
@@ -165,7 +168,7 @@ describe('Central de Atendimento ao Cliente TAT', function(){
             cy.fillMandatoryFieldsWithMockedValuesAndPressEnter();
             cy.validateSuccessMessage();
             cy.tick(3000);
-            cy.validateSuccessMessage('not.');
+            cy.validateSuccessMessage(defaultValues.variables.not);
         });
     });
    

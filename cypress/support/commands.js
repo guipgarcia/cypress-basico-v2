@@ -84,7 +84,6 @@ Cypress.Commands.add('selectProduct', function(product, valueToCompare){
     .select(product).should('have.value', valueToCompare);
 });
 
-
 Cypress.Commands.add('selectARandomProduct', function(){
     cy.get(fieldsMaps.selectProductOptionsMap()).as('products')
     .its('length', { log : false}).then(n =>{
